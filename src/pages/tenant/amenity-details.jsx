@@ -82,21 +82,24 @@ function AmenityDetails() {
   e.preventDefault();
 
   try {
-    const response = await fetch("https://propease-backend-7fob.onrender.com/api/maintenance", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        amenity: amenity.name,
-        icon: amenity.icon,
-        tenant: "Current Tenant",
-        apartment: "Current Apartment",
-        date: date,
-        checkIn: startTime,
-        checkOut: endTime,
-      }),
-    });
+   const response = await fetch(
+  "https://propease-backend-7fob.onrender.com/api/bookings",
+  {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      amenity: amenity.name,
+      icon: amenity.icon,
+      tenant: "Current Tenant",
+      apartment: "Current Apartment",
+      date: date,
+      checkIn: startTime,
+      checkOut: endTime,
+    }),
+  }
+);
 
     const data = await response.json();
 
