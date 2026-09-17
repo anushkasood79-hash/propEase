@@ -12,7 +12,7 @@ function ManagerBookings() {
       setLoading(true);
 
       const response = await fetch(
-        "http://localhost:5000/api/bookings"
+        "https://propease-backend-7fob.onrender.com/api/bookings"
       );
 
       const data = await response.json();
@@ -39,7 +39,7 @@ function ManagerBookings() {
   const updateBookingStatus = async (bookingId, status) => {
     try {
       const response = await fetch(
-        `http://localhost:5000/api/bookings/${bookingId}/status`,
+        `https://propease-backend-7fob.onrender.com/api/bookings/${bookingId}/status`,
         {
           method: "PATCH",
           headers: {

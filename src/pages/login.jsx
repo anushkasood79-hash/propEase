@@ -3,7 +3,6 @@ import { useState } from "react";
 
 function Login() {
   const navigate = useNavigate();
-
   const [role, setRole] = useState("tenant");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -18,7 +17,7 @@ function Login() {
 
     try {
       const response = await fetch(
-        "http://localhost:5000/api/auth/login",
+  "https://propease-backend-7fob.onrender.com/api/auth/login",
         {
           method: "POST",
           headers: {

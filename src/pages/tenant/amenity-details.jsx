@@ -82,7 +82,7 @@ function AmenityDetails() {
   e.preventDefault();
 
   try {
-    const response = await fetch("http://localhost:5000/api/bookings", {
+    const response = await fetch("https://propease-backend-7fob.onrender.com/api/maintenance", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

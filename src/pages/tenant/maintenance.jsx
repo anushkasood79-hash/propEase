@@ -13,7 +13,7 @@ function Maintenance() {
   const fetchRequests = async () => {
     try {
       const response = await fetch(
-        "http://localhost:5000/api/maintenance"
+        "https://propease-backend-7fob.onrender.com/api/maintenance"
       );
 
       const data = await response.json();
