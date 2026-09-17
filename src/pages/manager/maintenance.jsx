@@ -32,7 +32,7 @@ function ManagerMaintenance() {
   const updateStatus = async (id, newStatus) => {
     try {
       const response = await fetch(
-        `https://propease-backend-7fob.onrender.com/api/maintenance`,
+        `https://propease-backend-7fob.onrender.com/api/maintenance/${id}/status`,
         {
           method: "PATCH",
           headers: {
