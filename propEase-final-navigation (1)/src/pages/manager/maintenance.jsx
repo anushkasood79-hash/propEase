@@ -1,65 +1,30 @@
+
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 
 function ManagerMaintenance() {
   const [requests, setRequests] = useState([]);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchRequests();
+    const savedRequests =
+      JSON.parse(localStorage.getItem("maintenanceRequests")) || [];
+
+    setRequests(savedRequests);
   }, []);
 
-  const fetchRequests = async () => {
-    try {
-      const response = await fetch(
-        "https://propease-backend-7fob.onrender.com/api/maintenance"
-      );
+  const updateStatus = (id, newStatus) => {
+    const updatedRequests = requests.map((request) =>
+      request.id === id
+        ? { ...request, status: newStatus }
+        : request
+    );
 
-      const data = await response.json();
+    setRequests(updatedRequests);
 
-      if (!response.ok) {
-        throw new Error(data.message || "Failed to fetch requests");
-      }
-
-      setRequests(data);
-    } catch (error) {
-      console.error("Error fetching requests:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const updateStatus = async (id, newStatus) => {
-    try {
-      const response = await fetch(
-        `https://propease-backend-7fob.onrender.com/api/maintenance`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            status: newStatus,
-          }),
-        }
-      );
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || "Failed to update status");
-      }
-
-      setRequests((prevRequests) =>
-        prevRequests.map((request) =>
-          request._id === id ? data.request : request
-        )
-      );
-
-    } catch (error) {
-      console.error("Error updating status:", error);
-      alert("Failed to update request status.");
-    }
+    localStorage.setItem(
+      "maintenanceRequests",
+      JSON.stringify(updatedRequests)
+    );
   };
 
   const getStatusStyle = (status) => {
@@ -69,10 +34,6 @@ function ManagerMaintenance() {
 
     if (status === "In Progress") {
       return "bg-yellow-100 text-yellow-700";
-    }
-
-    if (status === "Cancelled") {
-      return "bg-red-100 text-red-700";
     }
 
     return "bg-blue-100 text-blue-700";
@@ -111,18 +72,14 @@ function ManagerMaintenance() {
             <h2 className="font-bold">All Requests</h2>
           </div>
 
-          {loading ? (
-            <div className="p-10 text-center text-slate-500">
-              Loading maintenance requests...
-            </div>
-          ) : requests.length === 0 ? (
+          {requests.length === 0 ? (
             <div className="p-10 text-center text-slate-500">
               No maintenance requests have been submitted yet.
             </div>
           ) : (
             <div className="divide-y">
               {requests.map((request) => (
-                <div key={request._id} className="p-6">
+                <div key={request.id} className="p-6">
                   <div className="flex flex-col justify-between gap-5 lg:flex-row">
                     <div>
                       <div className="flex flex-wrap items-center gap-3">
@@ -140,12 +97,11 @@ function ManagerMaintenance() {
                       </div>
 
                       <p className="mt-2 text-sm text-slate-500">
-                        Request #{request._id}
+                        Request #{request.id}
                       </p>
 
                       <p className="mt-1 text-sm text-slate-500">
-                        Created:{" "}
-                        {new Date(request.createdAt).toLocaleDateString()}
+                        Created: {request.createdAt}
                       </p>
 
                       <div className="mt-4 space-y-1 text-sm text-slate-600">
@@ -184,14 +140,13 @@ function ManagerMaintenance() {
                       <select
                         value={request.status}
                         onChange={(e) =>
-                          updateStatus(request._id, e.target.value)
+                          updateStatus(request.id, e.target.value)
                         }
                         className="rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm outline-none focus:border-blue-600"
                       >
                         <option value="Pending">Pending</option>
                         <option value="In Progress">In Progress</option>
                         <option value="Completed">Completed</option>
-                        <option value="Cancelled">Cancelled</option>
                       </select>
                     </div>
                   </div>

@@ -11,7 +11,6 @@ function NewMaintenance() {
   });
 
   const [submitted, setSubmitted] = useState(false);
-  const [error, setError] = useState("");
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -22,51 +21,51 @@ function NewMaintenance() {
     }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
 
-    setSubmitted(false);
-    setError("");
+    // Get existing maintenance requests
+    const existingRequests =
+      JSON.parse(localStorage.getItem("maintenanceRequests")) || [];
 
-    try {
-      const response = await fetch("https://propease-backend-7fob.onrender.com/api/maintenance", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          title: formData.title,
-          category: formData.category,
-          priority: formData.priority,
-          description: formData.description,
-          image: formData.image ? formData.image.name : "",
-        }),
-      });
+    // Create new request
+    const newRequest = {
+      id: `MR-${Date.now()}`,
+      title: formData.title,
+      category: formData.category,
+      priority: formData.priority,
+      description: formData.description,
+      image: formData.image ? formData.image.name : "",
+      status: "Pending",
+      createdAt: new Date().toISOString(),
+    };
 
-      const data = await response.json();
+    // Add new request
+    const updatedRequests = [...existingRequests, newRequest];
 
-      if (!response.ok) {
-        throw new Error(data.message || "Failed to submit request");
-      }
+    // Save to localStorage
+    localStorage.setItem(
+      "maintenanceRequests",
+      JSON.stringify(updatedRequests)
+    );
 
-      console.log("Maintenance Request Saved:", data.request);
+    console.log("New Maintenance Request:", newRequest);
+    console.log("Saved Maintenance Requests:", updatedRequests);
 
-      setSubmitted(true);
+    // Show success message
+    setSubmitted(true);
 
-      setFormData({
-        title: "",
-        category: "",
-        priority: "medium",
-        description: "",
-        image: null,
-      });
+    // Clear form
+    setFormData({
+      title: "",
+      category: "",
+      priority: "medium",
+      description: "",
+      image: null,
+    });
 
-      e.target.reset();
-
-    } catch (error) {
-      console.error(error);
-      setError(error.message);
-    }
+    // Reset file input visually
+    e.target.reset();
   };
 
   return (
@@ -102,12 +101,6 @@ function NewMaintenance() {
             </div>
           )}
 
-          {error && (
-            <div className="mt-6 rounded-lg bg-red-100 p-4 font-medium text-red-700">
-              {error}
-            </div>
-          )}
-
           <form onSubmit={handleSubmit} className="mt-8 space-y-6">
             <div>
               <label className="mb-2 block text-sm font-medium text-slate-700">
@@ -120,7 +113,6 @@ function NewMaintenance() {
                 value={formData.title}
                 onChange={handleChange}
                 placeholder="e.g. Water leakage in bathroom"
-                required
                 className="w-full rounded-lg border border-slate-300 px-4 py-3 outline-none focus:border-blue-600"
               />
             </div>
@@ -134,7 +126,6 @@ function NewMaintenance() {
                 name="category"
                 value={formData.category}
                 onChange={handleChange}
-                required
                 className="w-full rounded-lg border border-slate-300 bg-white px-4 py-3"
               >
                 <option value="">Select category</option>
@@ -175,7 +166,6 @@ function NewMaintenance() {
                 onChange={handleChange}
                 rows="5"
                 placeholder="Describe the issue in detail..."
-                required
                 className="w-full resize-none rounded-lg border border-slate-300 px-4 py-3"
               />
             </div>

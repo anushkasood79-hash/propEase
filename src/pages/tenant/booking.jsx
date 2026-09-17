@@ -11,7 +11,7 @@ function MyBookings() {
       setLoading(true);
 
       const response = await fetch(
-        "http://propease-backend-7fob.onrender.com/api/bookings"
+        "https://propease-backend-7fob.onrender.com/api/bookings"
       );
 
       const data = await response.json();
